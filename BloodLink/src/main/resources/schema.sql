@@ -1,6 +1,10 @@
 CREATE DATABASE IF NOT EXISTS bloodlink_db;
 USE bloodlink_db;
 
+DROP TABLE IF EXISTS donation_record;
+DROP TABLE IF EXISTS donor;
+DROP TABLE IF EXISTS blood_group;
+
 CREATE TABLE blood_group (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(10) NOT NULL UNIQUE

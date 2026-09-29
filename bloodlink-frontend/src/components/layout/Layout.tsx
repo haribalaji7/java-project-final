@@ -3,12 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, Users, UserPlus, FileHeart, BarChart3, Activity, Menu, X, Moon, Sun } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useTheme } from "../theme-provider";
+import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "../ui/button";
 
 const links = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Search Donors", href: "/search", icon: Users },
-  { name: "Register Donor", href: "/register", icon: UserPlus },
+  { name: "Register Donor", href: "/register-donor", icon: UserPlus },
   { name: "Record Donation", href: "/record", icon: FileHeart },
   { name: "Statistics", href: "/stats", icon: BarChart3 },
 ];
@@ -17,6 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { logout, user } = useAuth();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -71,7 +73,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
 
-        <div className="p-4 border-t border-border mt-auto">
+        <div className="p-4 border-t border-border mt-auto flex flex-col gap-2">
+          {user && (
+            <div className="px-4 py-2 text-sm font-medium text-muted-foreground truncate">
+              Welcome, {user.name}
+            </div>
+          )}
           <Button 
             variant="outline" 
             className="w-full justify-start gap-3"
@@ -79,6 +86,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           >
             {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             Toggle Theme
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50"
+            onClick={logout}
+          >
+            Logout
           </Button>
         </div>
       </aside>

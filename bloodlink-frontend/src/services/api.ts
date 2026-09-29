@@ -8,6 +8,16 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token && token !== 'null' && token !== 'undefined' && token.trim() !== '') {
+    config.headers.Authorization = `Bearer ${token.trim()}`;
+  } else {
+    delete config.headers.Authorization;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
