@@ -42,6 +42,16 @@ public class DonorController {
         return ResponseEntity.ok(donors);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get donor by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved donor"),
+            @ApiResponse(responseCode = "404", description = "Donor not found")
+    })
+    public ResponseEntity<DonorResponseDTO> getDonorById(@PathVariable Long id) {
+        return ResponseEntity.ok(donorService.getDonorById(id));
+    }
+
     @GetMapping("/search")
     @Operation(summary = "Search available donors by city and blood group")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved available donors")

@@ -20,17 +20,24 @@ import java.util.stream.Collectors;
 public class DonorService {
 
     private final DonorRepository donorRepository;
+    private final com.bloodlink.repository.BloodGroupRepository bloodGroupRepository;
 
     /**
      * Registers a new donor into the system. Default availability is true.
      */
     @Transactional
     public DonorResponseDTO registerDonor(DonorRequestDTO request) {
+        if (donorRepository.existsByPhone(request.getPhone())) {
+            throw new IllegalArgumentException("Phone number already exists: " + request.getPhone());
+        }
+
+        com.bloodlink.entity.BloodGroup bg = bloodGroupRepository.findByName(request.getBloodGroup())
+                .orElseThrow(() -> new ResourceNotFoundException("Blood group not found"));
         Donor donor = Donor.builder()
-                .name(request.getName())
-                .phone(request.getPhone())
-                .city(request.getCity())
-                .bloodGroup(request.getBloodGroup())
+                .name(request.getName() != null ? request.getName().trim() : null)
+                .phone(request.getPhone() != null ? request.getPhone().trim() : null)
+                .city(request.getCity() != null ? request.getCity().trim() : null)
+                .bloodGroup(bg)
                 .available(true)
                 .build();
 
@@ -39,11 +46,21 @@ public class DonorService {
     }
 
     /**
+     * Get donor by ID
+     */
+    @Transactional(readOnly = true)
+    public DonorResponseDTO getDonorById(Long id) {
+        return mapToResponseDTO(getDonorEntity(id));
+    }
+
+    /**
      * Searches for currently available donors by city and blood group.
      */
     @Transactional(readOnly = true)
     public List<DonorResponseDTO> searchAvailableDonors(String city, String bloodGroup) {
-        List<Donor> donors = donorRepository.findAvailableDonorsByBloodGroupAndCity(bloodGroup, city);
+        String normalizedCity = city != null ? city.trim() : null;
+        LocalDate eligibilityDate = LocalDate.now().minusDays(BloodLinkConstants.COOLDOWN_DAYS);
+        List<Donor> donors = donorRepository.findAvailableDonorsByBloodGroupAndCity(bloodGroup, normalizedCity, eligibilityDate);
         return donors.stream().map(this::mapToResponseDTO).collect(Collectors.toList());
     }
 
@@ -92,7 +109,7 @@ public class DonorService {
                 .name(donor.getName())
                 .phone(donor.getPhone())
                 .city(donor.getCity())
-                .bloodGroup(donor.getBloodGroup())
+                .bloodGroup(donor.getBloodGroup().getName())
                 .available(donor.isAvailable())
                 .lastDonationDate(donor.getLastDonationDate())
                 .build();

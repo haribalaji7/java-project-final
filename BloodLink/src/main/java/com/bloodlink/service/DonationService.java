@@ -43,6 +43,10 @@ public class DonationService {
         DonationRecord record = DonationRecord.builder()
                 .donor(donor)
                 .donationDate(donationDate)
+                .hospitalName(request.getHospitalName())
+                .doctorName(request.getDoctorName())
+                .unitsDonated(request.getUnitsDonated())
+                .remarks(request.getRemarks())
                 .build();
         
         DonationRecord savedRecord = donationRecordRepository.save(record);
@@ -50,13 +54,48 @@ public class DonationService {
         // Update the donor's availability (mark them as unavailable)
         donorService.updateDonorAvailability(donor, false, donationDate);
 
+        return mapToResponseDTO(savedRecord);
+    }
+
+    public java.util.List<DonationResponseDTO> getDonationHistory(Long donorId) {
+        return donationRecordRepository.findByDonorIdOrderByDonationDateDesc(donorId).stream()
+                .map(this::mapToResponseDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public java.util.List<DonationResponseDTO> getAllDonations() {
+        return donationRecordRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "donationDate")).stream()
+                .map(this::mapToResponseDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public DonationResponseDTO getLatestDonation() {
+        DonationRecord record = donationRecordRepository.findFirstByOrderByDonationDateDesc();
+        if (record == null) {
+            throw new com.bloodlink.exception.ResourceNotFoundException("No donations found");
+        }
+        return mapToResponseDTO(record);
+    }
+
+    public java.util.List<DonationResponseDTO> getDonationsBetweenDates(LocalDate startDate, LocalDate endDate) {
+        return donationRecordRepository.findByDonationDateBetweenOrderByDonationDateDesc(startDate, endDate).stream()
+                .map(this::mapToResponseDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    private DonationResponseDTO mapToResponseDTO(DonationRecord record) {
         return DonationResponseDTO.builder()
-                .id(savedRecord.getId())
-                .donorId(donor.getId())
-                .donorName(donor.getName())
-                .bloodGroup(donor.getBloodGroup())
-                .donationDate(savedRecord.getDonationDate())
-                .nextEligibleDate(savedRecord.getDonationDate().plusDays(BloodLinkConstants.COOLDOWN_DAYS))
+                .id(record.getId())
+                .donorId(record.getDonor().getId())
+                .donorName(record.getDonor().getName())
+                .bloodGroup(record.getDonor().getBloodGroup().getName())
+                .donationDate(record.getDonationDate())
+                .nextEligibleDate(record.getDonationDate().plusDays(BloodLinkConstants.COOLDOWN_DAYS))
+                .hospitalName(record.getHospitalName())
+                .doctorName(record.getDoctorName())
+                .unitsDonated(record.getUnitsDonated())
+                .remarks(record.getRemarks())
+                .createdAt(record.getCreatedAt())
                 .build();
     }
 }

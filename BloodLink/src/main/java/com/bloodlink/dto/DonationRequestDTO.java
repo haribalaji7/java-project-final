@@ -20,4 +20,9 @@ public class DonationRequestDTO {
     @NotNull(message = "Donation date is required")
     @PastOrPresent(message = "Donation date cannot be in the future")
     private LocalDate donationDate;
+
+    private String hospitalName;
+    private String doctorName;
+    private Integer unitsDonated;
+    private String remarks;
 }

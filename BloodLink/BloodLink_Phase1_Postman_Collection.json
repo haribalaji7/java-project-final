@@ -1,0 +1,130 @@
+{
+  "info": {
+    "name": "BloodLink - Phase 1",
+    "description": "Postman Collection for BloodLink Backend APIs covering Phase 1 requirements.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Donor Management",
+      "item": [
+        {
+          "name": "Register Donor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"phone\": \"9876543210\",\n  \"city\": \"Mumbai\",\n  \"bloodGroup\": \"O+\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/donors",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "donors"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Available Donors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/donors/search?city=Mumbai&bloodGroup=O+",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "donors",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Mumbai"
+                },
+                {
+                  "key": "bloodGroup",
+                  "value": "O+"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Donation Management",
+      "item": [
+        {
+          "name": "Record Donation (Triggers Cooldown)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"donorId\": 1,\n  \"donationDate\": \"2023-10-01\",\n  \"hospitalName\": \"City Hospital\",\n  \"doctorName\": \"Dr. Smith\",\n  \"unitsDonated\": 1,\n  \"remarks\": \"Standard donation\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/donations",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "donations"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Blood Group Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/api/stats/blood-groups",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "stats",
+                "blood-groups"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

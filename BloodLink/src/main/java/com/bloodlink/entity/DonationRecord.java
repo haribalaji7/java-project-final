@@ -24,4 +24,24 @@ public class DonationRecord {
 
     @Column(name = "donation_date", nullable = false)
     private LocalDate donationDate;
+
+    @Column(name = "hospital_name", length = 100)
+    private String hospitalName;
+
+    @Column(name = "doctor_name", length = 100)
+    private String doctorName;
+
+    @Column(name = "units_donated")
+    private Integer unitsDonated;
+
+    @Column(length = 500)
+    private String remarks;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private java.time.LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
+    private java.time.LocalDateTime updatedAt;
 }

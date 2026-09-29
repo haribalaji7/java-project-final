@@ -28,9 +28,9 @@ public class Donor {
     @Column(nullable = false, length = 100)
     private String city;
 
-    // Kept as String to avoid complex joins just for the name, but could be mapped to BloodGroup entity if needed.
-    @Column(name = "blood_group", nullable = false, length = 10)
-    private String bloodGroup;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blood_group_id", nullable = false)
+    private BloodGroup bloodGroup;
 
     @Column(nullable = false)
     private boolean available = true;
@@ -40,4 +40,12 @@ public class Donor {
 
     @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DonationRecord> donationRecords;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @org.hibernate.annotations.CreationTimestamp
+    private java.time.LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @org.hibernate.annotations.UpdateTimestamp
+    private java.time.LocalDateTime updatedAt;
 }

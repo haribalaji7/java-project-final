@@ -32,4 +32,27 @@ public class DonationController {
         DonationResponseDTO response = donationService.recordDonation(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @GetMapping("/donor/{donorId}")
+    @Operation(summary = "Get complete donation history of a donor")
+    public ResponseEntity<java.util.List<DonationResponseDTO>> getDonationHistory(@PathVariable Long donorId) {
+        return ResponseEntity.ok(donationService.getDonationHistory(donorId));
+    }
+
+    @GetMapping("/latest")
+    @Operation(summary = "Get latest donation")
+    public ResponseEntity<DonationResponseDTO> getLatestDonation() {
+        return ResponseEntity.ok(donationService.getLatestDonation());
+    }
+
+    @GetMapping
+    @Operation(summary = "List donations")
+    public ResponseEntity<java.util.List<DonationResponseDTO>> getDonations(
+            @RequestParam(required = false) java.time.LocalDate startDate,
+            @RequestParam(required = false) java.time.LocalDate endDate) {
+        if (startDate != null && endDate != null) {
+            return ResponseEntity.ok(donationService.getDonationsBetweenDates(startDate, endDate));
+        }
+        return ResponseEntity.ok(donationService.getAllDonations());
+    }
 }
